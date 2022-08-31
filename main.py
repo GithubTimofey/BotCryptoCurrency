@@ -6,7 +6,7 @@ import telebot
 from telebot import types
 import time
 
-bot = telebot.TeleBot('5280959610:AAEVtLFUphCrcpLRlUjlNzsCwaOqY0Be_o4');
+bot = telebot.TeleBot('');
 
 
 @bot.message_handler(commands=['help'])
