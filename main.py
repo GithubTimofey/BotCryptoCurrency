@@ -442,8 +442,6 @@ ________________
 _________________
 
 Монета WLKN: {WLKN}*''',parse_mode="Markdown")
-    else:
-        bot.send_message(message.chat.id,'Извините пока такую функцию не добавили (((')
 
 
 def main():
