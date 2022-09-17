@@ -1,32 +1,31 @@
-from ast import parse
 import requests
 from bs4 import BeautifulSoup
 import datetime
-import telebot 
-from telebot import types
 import time
+from aiogram import types, executor, Dispatcher, Bot
 
-bot = telebot.TeleBot('');
+TOKEN = '5280959610:AAEVtLFUphCrcpLRlUjlNzsCwaOqY0Be_o4'
+bot = Bot(token=TOKEN)
+dp = Dispatcher(bot)
 
-
-@bot.message_handler(commands=['help'])
-def help(m,res=False):
-    bot.send_message(m.chat.id,'''
+@dp.message_handler(commands=['help'])
+async def help(m: types.Message):
+    await bot.send_message(m.chat.id,'''
 Список команд:
 
 /start - Вы получаете курс Монет.
 /author - Информация о том кто издал.
 /help - Выводит Список Команд''')
 
-@bot.message_handler(commands=['author'])
-def author(m,res=False):
-    bot.send_message(m.chat.id,'''
+@dp.message_handler(commands=['author'])
+async def author(m: types.Message):
+    await bot.send_message(m.chat.id,'''
 Этот БОТ был создан 16 апреля 2022.
 Тимофеем Корзниковым благодаря сайту coinmarketcap.com.
 И сайту www.banki.ru.''')
 
-@bot.message_handler(commands=["start"])
-def start(m):
+@dp.message_handler(commands=["start"])
+async def start(m: types.Message):
     markupreply = types.ReplyKeyboardMarkup(resize_keyboard=True)
     btn1 = types.KeyboardButton("💲Валюта")
     btn2 = types.KeyboardButton("🪙Монеты")
@@ -40,7 +39,7 @@ def start(m):
     response = requests.get(url)
     soup = BeautifulSoup(response.text, 'lxml')
     quete = soup.find_all('a',class_='cmc-link')
-    bot.send_message(m.chat.id,'''
+    await bot.send_message(m.chat.id,'''
 Привет *{0.first_name}*! Я КриптоБот. 
 
 *Капитализация рынка: {1} трлн*,
@@ -52,8 +51,8 @@ def start(m):
 
 
     
-@bot.message_handler(content_types=['text'])
-def general(message):
+@dp.message_handler(content_types=['text'])
+async def general(message: types.Message):
     if (message.text == '💲Валюта'):
         now1 = time.strftime("%H:%M:%S", time.localtime()) 
         now = datetime.datetime.now()
@@ -75,7 +74,7 @@ def general(message):
         soup_usd = BeautifulSoup(response_usd.text, 'lxml')
         quete_usd = soup_usd.find_all('div',class_='currency-table__large-text')
 
-        bot.send_message(message.chat.id,text = f'''
+        await bot.send_message(message.chat.id,text = f'''
 *Сегодня: {now.strftime('%d-%m-%Y').replace('-','/')}.
 Время: {now1}.
 ________________
@@ -144,7 +143,7 @@ _________________
         quete_car = soup_car.find_all('div',class_='priceValue')
         for i2 in quete_car:
             Cardana = i2.find('span').text
-        bot.send_message(message.chat.id,f'''
+        await bot.send_message(message.chat.id,f'''
 *Сегодня: {now.strftime('%d-%m-%Y').replace('-','/')}.
 Время: {now1}.
 ________________
@@ -207,7 +206,7 @@ _________________
         for gstercvalue in quete_gsterc:
             GSTERC = gstercvalue.find('span').text
 
-        bot.send_message(message.chat.id,f'''
+        await bot.send_message(message.chat.id,f'''
 *Сегодня: {now.strftime('%d-%m-%Y').replace('-','/')}.
 Время: {now1}.
 ________________
@@ -358,7 +357,7 @@ _________________
         for i4 in quete_gst_bsc:
             GST_BSC = i4.find('span').text
 
-        bot.send_message(message.chat.id,f'''
+        await bot.send_message(message.chat.id,f'''
 *Сегодня: {now.strftime('%d-%m-%Y').replace('-','/')}.
 Время: {now1}. 
 
@@ -401,7 +400,7 @@ _________________________
 Монета WLKN: {WLKN}.
 *''',parse_mode="Markdown")
     elif (message.text == '🏹Сайт'):
-        bot.send_message(message.chat.id,'Сайт https://coinmarketcap.com/ Просмотр 🪙Монет')
+        await bot.send_message(message.chat.id,'Сайт https://coinmarketcap.com/ Просмотр 🪙Монет')
     elif (message.text == '🎖️LetMeSpeak'):
         now1 = time.strftime("%H:%M:%S", time.localtime()) 
         now = datetime.datetime.now()
@@ -410,7 +409,7 @@ _________________________
         soup_lstar = BeautifulSoup(response_lstar.text,'lxml')
         quete_lstar = soup_lstar.find_all('span',class_='h2 mr-2 mb-2 price')
 
-        bot.send_message(message.chat.id,f'''
+        await bot.send_message(message.chat.id,f'''
 *Сегодня: {now.strftime('%d-%m-%Y').replace('-','/')}.
 Время: {now1}.
 ________________
@@ -433,7 +432,7 @@ _________________
         for i4 in quete_wlkn:
             WLKN = i4.find('span').text
 
-        bot.send_message(message.chat.id,f'''
+        await bot.send_message(message.chat.id,f'''
 *Сегодня: {now.strftime('%d-%m-%Y').replace('-','/')}.
 Время: {now1}.
 ________________
@@ -445,7 +444,7 @@ _________________
 
 
 def main():
-    bot.polling(non_stop=True,interval=0)
+    executor.start_polling(dp)
 
 if __name__ == '__main__':
     main()
